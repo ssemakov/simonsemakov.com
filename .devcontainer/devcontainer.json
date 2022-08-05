@@ -14,7 +14,10 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "mgmcdermott.vscode-language-babel",
+        "esbenp.prettier-vscode",
+        "ergenekonyigit.oceanic-next-bimbo"
       ]
     }
   },
@@ -27,5 +30,8 @@
   "features": {
     "github-cli": "latest",
     "homebrew": "latest"
+  },
+  "containerEnv": {
+    "WDS_SOCKET_PORT": "443"
   }
 }
