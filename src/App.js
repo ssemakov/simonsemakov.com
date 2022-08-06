@@ -1,25 +1,45 @@
-import { Layout } from "antd";
+import { Grid, Typography } from "@mui/material";
+import CssBaseline from "@mui/material/CssBaseline";
+import {
+  createTheme,
+  responsiveFontSizes,
+  ThemeProvider,
+} from "@mui/material/styles";
+import { Box, Container } from "@mui/system";
 import "./App.css";
 
-const { Header, Footer, Sider, Content } = Layout;
+let theme = createTheme();
+theme = responsiveFontSizes(theme);
 
 const App = () => (
-  <Layout>
-    <Layout>
-      <Header>Simon's World</Header>
-      <Content>
-        <h1>Hello</h1>
-        <h1>d My name is Simon</h1>
-        <hr />
-        <p>
-          I do many diffrent things. You can find about some of them on this
-          site.
-        </p>
-      </Content>
-      <Footer>Footer</Footer>
-    </Layout>
-    <Sider>Sider</Sider>
-  </Layout>
+  <>
+    <CssBaseline enableColorScheme />
+    <ThemeProvider theme={theme}></ThemeProvider>
+    <Box
+      sx={{
+        background:
+          "linear-gradient(to bottom, rgb(35, 41, 162), rgb(147, 151, 231))",
+        height: "100vh",
+      }}
+    >
+      <Grid container>
+        <Grid item sm={8}>
+          <Container component="main" sx={{ mt: 8, mb: 2 }} maxWidth="sm">
+            <Typography variant="h1">Hello</Typography>
+            <Typography variant="h1">My name is Simon</Typography>
+            <hr />
+            <p>
+              I do many diffrent things. You can find about some of them on this
+              site.
+            </p>
+          </Container>
+        </Grid>
+        <Grid item sm={4}>
+          Side bar here
+        </Grid>
+      </Grid>
+    </Box>
+  </>
 );
 
 export default App;

@@ -1,6 +1,7 @@
-body {
-  background: linear-gradient(to bottom, rgb(35, 41, 162), rgb(147, 151, 231));
-}
+@import '@fontsource/roboto/300.css';
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
 
 .App {
   text-align: center;
