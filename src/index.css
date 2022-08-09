@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: 'SimplePrint';
+  src: local('SimplePrint'), url(./fonts/SimplePrint.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'GeosansLight';
+  src: local('GeosansLight'), url(./fonts/GeosansLight/GeosansLight.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Quicksand-Book';
+  src: local('Quicksand-Book'), url(./fonts/Quicksand/Quicksand_Book.otf) format('opentype');
+}
