@@ -15,9 +15,13 @@ const App = () => (
           backgroundColor: "#2625ec47",
           height: "100vh",
         }}
+        display="flex"
+        height={80}
+        alignItems="center"
+        justifyContent="center"
       >
         <Grid container>
-          <Grid item sm={8}>
+          <Grid item sm={12}>
             <Container component="main" sx={{ mt: 8, mb: 2 }} maxWidth="sm">
               <Grid container direction="column" spacing={2}>
                 <Grid item>
