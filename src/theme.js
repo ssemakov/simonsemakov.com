@@ -5,7 +5,7 @@ let theme = createTheme({
     h1: {
       fontWeight: 300,
     },
-    fontFamily: "Quicksand-Book",
+    fontFamily: "Quicksand-Book, Roboto, Helvetica, system, sans-serif",
   },
 });
 

@@ -26,3 +26,10 @@ code {
   font-family: 'Quicksand-Book';
   src: local('Quicksand-Book'), url(./fonts/Quicksand/Quicksand_Book.otf) format('opentype');
 }
+
+@font-face {
+  font-family: system;
+  font-style: normal;
+  font-weight: 300;
+  src: BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
