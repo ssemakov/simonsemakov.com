@@ -10,7 +10,7 @@ import theme from "./theme";
 const Layout = ({ leftPaine: LeftPaine, rightPaine: RightPaine }) => (
   <Box
     sx={{
-      backgroundColor: "#2625ec47",
+      bgcolor: "background.default",
       height: "100vh",
     }}
   >
