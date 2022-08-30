@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AppBar, Drawer, IconButton, Toolbar } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
-import sidebarContent from "./sidebarContent";
+import SiteMenu from "./SiteMenu";
 
 const BarsIcon = () => <FontAwesomeIcon icon={faBars} />;
 const XMarkIcon = () => <FontAwesomeIcon icon={faXmark} />;
@@ -84,7 +84,7 @@ const ResponsiveSidebar = (props) => {
             },
           }}
         >
-          {sidebarContent}
+          <SiteMenu />
         </Drawer>
         <Drawer
           variant="permanent"
@@ -99,7 +99,7 @@ const ResponsiveSidebar = (props) => {
           anchor="right"
           open
         >
-          {sidebarContent}
+          <SiteMenu />
         </Drawer>
       </Box>
     </Box>
