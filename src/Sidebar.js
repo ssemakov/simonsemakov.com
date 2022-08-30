@@ -1,36 +1,28 @@
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AppBar, Drawer, Grid, IconButton, Toolbar } from "@mui/material";
+import { AppBar, Drawer, IconButton, Toolbar } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import sidebarContent from "./sidebarContent";
 
-const MenuIcon = () => <FontAwesomeIcon icon={faBars} />;
-const CloseMenuIcon = () => <FontAwesomeIcon icon={faXmark} />;
+const BarsIcon = () => <FontAwesomeIcon icon={faBars} />;
+const XMarkIcon = () => <FontAwesomeIcon icon={faXmark} />;
 
-const OpenMenuButton = (props) => (
-  <IconButton
-    color="inherit"
-    aria-label="open drawer"
-    edge="end"
-    {...props}
-    sx={{ ml: { xs: 1 }, display: { md: "none" } }}
-  >
-    <MenuIcon />
-  </IconButton>
-);
+const drawerToggleButton = (Icon, direction) => (props) =>
+  (
+    <IconButton
+      color="inherit"
+      aria-label={`${direction} drawer`}
+      edge="end"
+      {...props}
+      sx={{ ml: { xs: 1 }, display: { md: "none" } }}
+    >
+      <Icon />
+    </IconButton>
+  );
 
-const CloseMenuButton = (props) => (
-  <IconButton
-    color="inherit"
-    aria-label="close drawer"
-    edge="end"
-    {...props}
-    sx={{ ml: { xs: 1 }, display: { md: "none" } }}
-  >
-    <CloseMenuIcon />
-  </IconButton>
-);
+const OpenDrawerButton = drawerToggleButton(BarsIcon, "open");
+const CloseDrawerButton = drawerToggleButton(XMarkIcon, "close");
 
 const ResponsiveSidebar = (props) => {
   const { window } = props;
@@ -55,17 +47,19 @@ const ResponsiveSidebar = (props) => {
         }}
       >
         <Toolbar>
-          {/* // get rid of the grid  it doesn't play well with the responsivness  */}
-          <Grid container direction="row">
-            <Grid item xs={11} />
-            <Grid item xs={1}>
-              {mobileOpen ? (
-                <CloseMenuButton onClick={handleDrawerToggle} />
-              ) : (
-                <OpenMenuButton onClick={handleDrawerToggle} />
-              )}
-            </Grid>
-          </Grid>
+          <Box
+            m={1}
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="flex-end"
+            sx={{ width: "100%" }}
+          >
+            {mobileOpen ? (
+              <CloseDrawerButton onClick={handleDrawerToggle} />
+            ) : (
+              <OpenDrawerButton onClick={handleDrawerToggle} />
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -98,6 +92,7 @@ const ResponsiveSidebar = (props) => {
             display: { xs: "none", sm: "none", md: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
+              borderLeftWidth: 0,
               width: drawerWidth,
             },
           }}
