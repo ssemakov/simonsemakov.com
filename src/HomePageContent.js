@@ -28,8 +28,7 @@ const HomePageContent = () => (
           </Grid>
           <Grid item>
             <Typography variant="h4" sx={{ color: "#272f5f9c" }}>
-              I do many diffrent things. You can find about some of them on this
-              site.
+              I do many different things.
             </Typography>
           </Grid>
         </Grid>
