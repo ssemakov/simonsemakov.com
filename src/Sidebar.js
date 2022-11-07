@@ -1,12 +1,10 @@
-import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AppBar, Drawer, IconButton, Toolbar } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import SiteMenu from "./SiteMenu";
 
-const BarsIcon = () => <FontAwesomeIcon icon={faBars} />;
-const XMarkIcon = () => <FontAwesomeIcon icon={faXmark} />;
+const BarsIcon = () => <i class="fa-solid fa-bars"></i>;
+const XMarkIcon = () => <i class="fa-solid fa-xmark"></i>;
 
 const drawerToggleButton = (Icon, direction) => (props) =>
   (
