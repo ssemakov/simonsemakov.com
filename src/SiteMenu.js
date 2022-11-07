@@ -1,14 +1,16 @@
 import { Container, Stack } from "@mui/material";
 import { Box } from "@mui/system";
+import GradientTypography from "./GradientTypography";
+
+const GitHubIcon = () => <i class="menu-icons fa-brands fa-github" size="22" />;
 
 const SiteMenu = () => (
-  <Box sx={{ height: "60vh" }} display="flex">
+  <Box sx={{ height: "70vh" }} display="flex">
     <Box m="auto">
       <Container>
         <Stack spacing={4}>
-          <span>Menu Item One</span>
-          <span> Menu Item Two</span>
-          <span> Menu Item Three</span>
+          <GitHubIcon />
+          <GradientTypography variant="h4">Menu Item One</GradientTypography>
         </Stack>
       </Container>
     </Box>
