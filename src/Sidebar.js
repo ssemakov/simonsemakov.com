@@ -1,10 +1,25 @@
-import { AppBar, Drawer, IconButton, Toolbar } from "@mui/material";
+import {
+  AppBar,
+  Container,
+  Drawer,
+  Grid,
+  IconButton,
+  Stack,
+  Toolbar,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
+import GradientTypography from "./GradientTypography";
 import SiteMenu from "./SiteMenu";
 
 const BarsIcon = () => <i class="fa-solid fa-bars"></i>;
 const XMarkIcon = () => <i class="fa-solid fa-xmark"></i>;
+
+/// temp
+const GitHubIcon = () => <i class="menu-icons fa-brands fa-github" />;
+const TwitterIcon = () => <i class="menu-icons fa-brands fa-twitter" />;
+const KeyBase = () => <i class="menu-icons fa-brands fa-keybase"></i>;
+///
 
 const drawerToggleButton = (Icon, direction) => (props) =>
   (
@@ -27,7 +42,10 @@ const ResponsiveSidebar = (props) => {
   const [mobileOpen, setMobileOpen] = useState(true);
   const container =
     window !== undefined ? () => window().document.body : undefined;
-  const drawerWidth = 300;
+
+  // 400 suites well both iPhone 12 and iPad Air vertical screens
+  // I may need to do more granular steps to accommodate more different screen sizes aesthetics
+  const drawerWidth = 400;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -82,7 +100,9 @@ const ResponsiveSidebar = (props) => {
             },
           }}
         >
-          <SiteMenu />
+          <Box sx={{ margin: "8em 0" }}>
+            <SiteMenu />
+          </Box>
         </Drawer>
         <Drawer
           variant="permanent"
@@ -97,11 +117,45 @@ const ResponsiveSidebar = (props) => {
           anchor="right"
           open
         >
-          <SiteMenu />
+          <>
+            <Box sx={{ height: "70vh" }} display="flex">
+              <Box m="auto">
+                <MenuItems />
+              </Box>
+            </Box>
+            <Grid container direction="column" justifyContent="flex-end">
+              <Grid item>
+                {/* /// maybe push them into footer for both mobile and desktop */}
+                <Icons />
+              </Grid>
+            </Grid>
+          </>
         </Drawer>
       </Box>
     </Box>
   );
 };
+
+const Icons = () => (
+  <Grid container justifyContent="center" spacing={4}>
+    <Grid item>
+      <GitHubIcon />
+    </Grid>
+    <Grid item>
+      <TwitterIcon />
+    </Grid>
+    <Grid item>
+      <KeyBase />
+    </Grid>
+  </Grid>
+);
+
+const MenuItems = () => (
+  <Container>
+    <Stack spacing={4}>
+      <GradientTypography variant="h4">Menu Item One</GradientTypography>
+    </Stack>
+  </Container>
+);
 
 export default ResponsiveSidebar;
