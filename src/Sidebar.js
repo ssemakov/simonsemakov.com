@@ -1,25 +1,11 @@
-import {
-  AppBar,
-  Container,
-  Drawer,
-  Grid,
-  IconButton,
-  Stack,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Drawer, IconButton, Toolbar } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
-import GradientTypography from "./GradientTypography";
-import SiteMenu from "./SiteMenu";
+import BottomIconNavigation from "./BottomIconsNavigation";
+import SideMenu from "./SideMenu";
 
 const BarsIcon = () => <i class="fa-solid fa-bars"></i>;
 const XMarkIcon = () => <i class="fa-solid fa-xmark"></i>;
-
-/// temp
-const GitHubIcon = () => <i class="menu-icons fa-brands fa-github" />;
-const TwitterIcon = () => <i class="menu-icons fa-brands fa-twitter" />;
-const KeyBase = () => <i class="menu-icons fa-brands fa-keybase"></i>;
-///
 
 const drawerToggleButton = (Icon, direction) => (props) =>
   (
@@ -36,6 +22,15 @@ const drawerToggleButton = (Icon, direction) => (props) =>
 
 const OpenDrawerButton = drawerToggleButton(BarsIcon, "open");
 const CloseDrawerButton = drawerToggleButton(XMarkIcon, "close");
+
+const Content = () => (
+  <Box sx={{ height: "70vh" }} display="flex">
+    <Box m="auto">
+      <SideMenu />
+      <BottomIconNavigation />
+    </Box>
+  </Box>
+);
 
 const ResponsiveSidebar = (props) => {
   const { window } = props;
@@ -100,9 +95,7 @@ const ResponsiveSidebar = (props) => {
             },
           }}
         >
-          <Box sx={{ margin: "8em 0" }}>
-            <SiteMenu />
-          </Box>
+          <Content />
         </Drawer>
         <Drawer
           variant="permanent"
@@ -117,45 +110,11 @@ const ResponsiveSidebar = (props) => {
           anchor="right"
           open
         >
-          <>
-            <Box sx={{ height: "70vh" }} display="flex">
-              <Box m="auto">
-                <MenuItems />
-              </Box>
-            </Box>
-            <Grid container direction="column" justifyContent="flex-end">
-              <Grid item>
-                {/* /// maybe push them into footer for both mobile and desktop */}
-                <Icons />
-              </Grid>
-            </Grid>
-          </>
+          <Content />
         </Drawer>
       </Box>
     </Box>
   );
 };
-
-const Icons = () => (
-  <Grid container justifyContent="center" spacing={4}>
-    <Grid item>
-      <GitHubIcon />
-    </Grid>
-    <Grid item>
-      <TwitterIcon />
-    </Grid>
-    <Grid item>
-      <KeyBase />
-    </Grid>
-  </Grid>
-);
-
-const MenuItems = () => (
-  <Container>
-    <Stack spacing={4}>
-      <GradientTypography variant="h4">Menu Item One</GradientTypography>
-    </Stack>
-  </Container>
-);
 
 export default ResponsiveSidebar;
