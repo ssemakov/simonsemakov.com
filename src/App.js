@@ -10,7 +10,6 @@ import theme from "./theme";
 const Layout = ({ leftPaine: LeftPaine, rightPaine: RightPaine }) => (
   <Box
     sx={{
-      bgcolor: "background.default",
       height: "100vh",
     }}
   >
@@ -27,8 +26,8 @@ const Layout = ({ leftPaine: LeftPaine, rightPaine: RightPaine }) => (
 
 const App = () => (
   <>
-    <CssBaseline enableColorScheme />
     <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
       <Layout leftPaine={HomePageContent} rightPaine={Sidebar} />
     </ThemeProvider>
   </>
