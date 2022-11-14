@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Link } from "@mui/material";
 import { Box } from "@mui/system";
 
 const GitHubIcon = () => <i class="menu-icons fa-brands fa-github" />;
@@ -11,13 +11,35 @@ const BottomIconNavigation = () => (
   >
     <Grid container direction="row" justifyContent="center" spacing={6}>
       <Grid item>
-        <GitHubIcon />
+        <Link
+          href="https://github.com/ssemakov"
+          rel="noopener"
+          target="_blank"
+          underline="hover"
+          aria-label="Visit Simon's GitHub profile which opens in a new window."
+        >
+          <GitHubIcon />
+        </Link>
       </Grid>
       <Grid item>
-        <TwitterIcon />
+        <Link
+          href="https://twitter.com/ssemakov"
+          rel="noopener"
+          target="_blank"
+          aria-label="Visit Simon's Twitter which opens in a new window."
+        >
+          <TwitterIcon />
+        </Link>
       </Grid>
       <Grid item>
-        <KeyBase />
+        <Link
+          href="https://keybase.io/ssemakov"
+          rel="noopener"
+          target="_blank"
+          aria-label="Visit Simon's Keybase profile which opens in a new window."
+        >
+          <KeyBase />
+        </Link>
       </Grid>
     </Grid>
   </Box>
