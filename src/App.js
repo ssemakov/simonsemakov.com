@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { Grid } from "@mui/material";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import { Box } from "@mui/system";
+import "./App.css";
+import HomePageContent from "./HomePageContent";
+import Sidebar from "./Sidebar";
+import theme from "./theme";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const Layout = ({ leftPaine: LeftPaine, rightPaine: RightPaine }) => (
+  <Box
+    sx={{
+      height: "100vh",
+    }}
+  >
+    <Grid container>
+      <Grid item md={8}>
+        <LeftPaine />
+      </Grid>
+      <Grid item md={4}>
+        <RightPaine />
+      </Grid>
+    </Grid>
+  </Box>
+);
+
+const App = () => (
+  <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
+      <Layout leftPaine={HomePageContent} rightPaine={Sidebar} />
+    </ThemeProvider>
+  </>
+);
 
 export default App;
