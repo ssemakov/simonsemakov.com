@@ -1,9 +1,9 @@
 import { Grid, Link } from "@mui/material";
 import { Box } from "@mui/system";
 
-const GitHubIcon = () => <i class="menu-icons fa-brands fa-github" />;
-const TwitterIcon = () => <i class="menu-icons fa-brands fa-twitter" />;
-const KeyBase = () => <i class="menu-icons fa-brands fa-keybase"></i>;
+const GitHubIcon = () => <i className="menu-icons fa-brands fa-github" />;
+const TwitterIcon = () => <i className="menu-icons fa-brands fa-twitter" />;
+const KeyBase = () => <i className="menu-icons fa-brands fa-keybase"></i>;
 
 const BottomIconNavigation = () => (
   <Box

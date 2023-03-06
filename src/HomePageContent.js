@@ -1,4 +1,4 @@
-import { Container, Divider, Grid, Typography } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import { Box } from "@mui/system";
 import GradientTypography from "./GradientTypography";
 
@@ -13,23 +13,6 @@ const HomePageContent = () => (
               <br />
               My name is Simon
             </GradientTypography>
-          </Grid>
-          <Grid item>
-            <Grid container>
-              <Grid item sm={1}>
-                <Divider
-                  sx={{
-                    borderBottomWidth: "thick",
-                    borderColor: "#818bc2",
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Typography variant="h4" sx={{ color: "#272f5f9c" }}>
-              I do many different things.
-            </Typography>
           </Grid>
         </Grid>
       </Container>

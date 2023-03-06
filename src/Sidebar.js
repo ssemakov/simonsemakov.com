@@ -4,8 +4,8 @@ import { useState } from "react";
 import BottomIconNavigation from "./BottomIconsNavigation";
 import SideMenu from "./SideMenu";
 
-const BarsIcon = () => <i class="fa-solid fa-bars"></i>;
-const XMarkIcon = () => <i class="fa-solid fa-xmark"></i>;
+const BarsIcon = () => <i className="fa-solid fa-bars"></i>;
+const XMarkIcon = () => <i className="fa-solid fa-xmark"></i>;
 
 const drawerToggleButton = (Icon, direction) => (props) =>
   (
@@ -34,7 +34,7 @@ const Content = () => (
 
 const ResponsiveSidebar = (props) => {
   const { window } = props;
-  const [mobileOpen, setMobileOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
