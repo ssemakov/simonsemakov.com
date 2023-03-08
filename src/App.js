@@ -8,20 +8,14 @@ import Sidebar from "./Sidebar";
 import theme from "./theme";
 
 const Layout = ({ leftPaine: LeftPaine, rightPaine: RightPaine }) => (
-  <Box
-    sx={{
-      height: "100vh",
-    }}
-  >
-    <Grid container>
-      <Grid item md={8}>
-        <LeftPaine />
-      </Grid>
-      <Grid item md={4}>
-        <RightPaine />
-      </Grid>
+  <Grid container>
+    <Grid item md={8}>
+      <LeftPaine />
     </Grid>
-  </Box>
+    <Grid item md={4}>
+      <RightPaine />
+    </Grid>
+  </Grid>
 );
 
 const App = () => (
