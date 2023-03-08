@@ -28,14 +28,6 @@ body {
   min-height: 100vh;
 }
 
-@supports (-webkit-touch-callout: none){
-
-
-  body{
-    min-height: -webkit-fill-available;
-  }
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -69,12 +61,4 @@ code {
 
 .full-height {
   min-height: 100vh;
-}
-
-@supports (-webkit-touch-callout: none){
-
-
-  .full-height{
-    min-height: -webkit-fill-available;
-  }
 }

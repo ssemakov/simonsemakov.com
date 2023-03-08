@@ -1,6 +1,6 @@
 {
-  "name": "me-frontend",
-  "version": "0.1.0",
+  "name": "simonsemakov.com",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.0.0",
@@ -9,7 +9,7 @@
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@fontsource/roboto": "^4.5.7",
-    "@mui/material": "^5.9.3",
+    "@mui/material": "^5.11.12",
     "@testing-library/dom": ">=7.21.4",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
@@ -23,10 +23,23 @@
     "typescript": ">= 2.7",
     "web-vitals": "^2.1.0"
   },
+  "devDependencies": {
+    "autoprefixer": "^10.4.13",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.21",
+    "postcss-100vh-fix": "^1.0.2",
+    "postcss-cli": "^10.1.0",
+    "postcss-nested": "^6.0.1"
+  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "build:css": "postcss src/styles/main.css -o src/index.css",
+    "watch:css": "postcss src/styles/main.css -o src/index.css -w",
+    "start": "npm-run-all -p watch:css start-js",
+    "start-js": "react-scripts start",
+    "build-js": "react-scripts build",
+    "build": "npm-run-all build:css build-js",
+    "test": "react-scripts test --env=jsdom",
+    "test:lint:js": "eslint --ext=js --ext=jsx ./src",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
