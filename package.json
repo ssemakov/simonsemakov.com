@@ -1,27 +1,17 @@
 {
   "name": "simonsemakov.com",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "dependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-syntax-flow": "^7.14.5",
-    "@babel/plugin-transform-react-jsx": "^7.14.9",
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.0",
     "@fontsource/roboto": "^4.5.7",
     "@mui/material": "^5.11.12",
-    "@testing-library/dom": ">=7.21.4",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^13.0.0",
-    "@testing-library/user-event": "^13.2.1",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
+    "next": "^13.2.3",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "typescript": ">= 2.7",
-    "web-vitals": "^2.1.0"
+    "typescript": ">= 2.7"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
@@ -32,33 +22,11 @@
     "postcss-nested": "^6.0.1"
   },
   "scripts": {
-    "build:css": "postcss src/styles/main.css -o src/index.css",
-    "watch:css": "postcss src/styles/main.css -o src/index.css -w",
-    "start": "npm-run-all -p watch:css start-js",
-    "start-js": "react-scripts start",
-    "build-js": "react-scripts build",
-    "build": "npm-run-all build:css build-js",
-    "test": "react-scripts test --env=jsdom",
-    "test:lint:js": "eslint --ext=js --ext=jsx ./src",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "husky": {
     "hooks": {
