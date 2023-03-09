@@ -3,9 +3,7 @@ import { Box } from "@mui/system";
 import { useState } from "react";
 import BottomIconNavigation from "./BottomIconsNavigation";
 import SideMenu from "./SideMenu";
-
-const BarsIcon = () => <i className="fa-solid fa-bars"></i>;
-const XMarkIcon = () => <i className="fa-solid fa-xmark"></i>;
+import { BarsIcon, XMarkIcon } from "./icons";
 
 const drawerToggleButton = (Icon, direction) => (props) =>
   (

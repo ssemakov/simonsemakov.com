@@ -1,9 +1,7 @@
 import { Grid, Link } from "@mui/material";
 import { Box } from "@mui/system";
-
-const GitHubIcon = () => <i className="menu-icons fa-brands fa-github" />;
-const TwitterIcon = () => <i className="menu-icons fa-brands fa-twitter" />;
-const KeyBase = () => <i className="menu-icons fa-brands fa-keybase"></i>;
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { GitHubIcon, TwitterIcon, KeyBaseIcon } from "./icons";
 
 const BottomIconNavigation = () => (
   <Box
@@ -38,7 +36,7 @@ const BottomIconNavigation = () => (
           target="_blank"
           aria-label="Visit Simon's Keybase profile which opens in a new window."
         >
-          <KeyBase />
+          <KeyBaseIcon />
         </Link>
       </Grid>
     </Grid>
