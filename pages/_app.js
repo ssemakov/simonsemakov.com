@@ -1,33 +1,35 @@
-import styles from "./styles/globals.css";
-import { Grid } from "@mui/material";
-// import CssBaseline from "@mui/material/CssBaseline";
+import Head from "next/head";
+import Script from "next/script";
+import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
-// import HomePageContent from "./HomePageContent";
-// import Sidebar from "./Sidebar";
-// import theme from "./theme";
+import { CacheProvider } from "@emotion/react";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import DefaultLayout from "../components/DefaultLayout";
+import theme from "../lib/theme";
+import createEmotionCache from "../lib/emotionCache";
+import styles from "../styles/globals.css";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 
-const HomePageLayout = ({ leftPaine: LeftPaine, rightPaine: RightPaine }) => (
-  <Grid container>
-    <Grid item md={8}>
-      <LeftPaine />
-    </Grid>
-    <Grid item md={4}>
-      <RightPaine />
-    </Grid>
-  </Grid>
+config.autoAddCss = false;
+
+const ViewportMetaLink = () => (
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 );
 
-const HomePageContent = () => <div>Home Page Content</div>;
-const Sidebar = () => <div>Sidebar</div>;
-const theme = {};
+const clientSideEmotionCache = createEmotionCache();
 
 export default function HomePage() {
   return (
     <>
-      <ThemeProvider theme={theme}>
-        {/* <CssBaseline enableColorScheme /> */}
-        <HomePageLayout leftPaine={HomePageContent} rightPaine={Sidebar} />
-      </ThemeProvider>
+      <Head>
+        <ViewportMetaLink />
+      </Head>
+      <CacheProvider value={clientSideEmotionCache}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline enableColorScheme />
+          <DefaultLayout />
+        </ThemeProvider>
+      </CacheProvider>
     </>
   );
 }

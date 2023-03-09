@@ -1,29 +1,61 @@
+import Document, { Html, Head, Main, NextScript } from "next/document";
 import Script from "next/script";
-import { Html, Head, Main, NextScript } from "next/document";
+import createEmotionServer from "@emotion/server/create-instance";
+import createEmotionCache from "../lib/emotionCache";
 
-export default function Document() {
-  return (
-    <Html lang="en">
-      <Head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content={metadata.description} />
-        <meta name="theme-color" content="#000000" />
-        <Script src="https://kit.fontawesome.com/306539fa0b.js" />
-      </Head>
-      <body>
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
-  );
-}
-
-export const metadata = {
+const metadata = {
   title: "Simon's page",
   description: "Welcome to my corner of the internet!",
-  charset: "utf-8",
   icons: {
     icon: "/favicon.ico",
   },
+};
+
+export default class TheDocument extends Document {
+  render() {
+    return (
+      <Html lang="en">
+        <Head>
+          {this.props.emotionStyleTags}
+          <meta name="description" content={metadata.description} />
+          <meta name="theme-color" content="#000000" />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
+}
+
+TheDocument.getInitialProps = async (context) => {
+  const originalRenderPage = context.renderPage;
+
+  const cache = createEmotionCache();
+  const { extractCriticalToChunks } = createEmotionServer(cache);
+
+  context.renderPage = () =>
+    originalRenderPage({
+      enhanceApp: (App) =>
+        function EnhanceApp(props) {
+          return <App emotionCache={cache} {...props} />;
+        },
+    });
+
+  const initialProps = await Document.getInitialProps(context);
+
+  const emotionStyles = extractCriticalToChunks(initialProps.html);
+  const emotionStyleTags = emotionStyles.styles.map((style) => (
+    <style
+      data-emotion={`${style.key} ${style.ids.join(" ")}`}
+      key={style.key}
+      dangerouslySetInnerHTML={{ __html: style.css }}
+    />
+  ));
+
+  return {
+    ...initialProps,
+    emotionStyleTags,
+  };
 };

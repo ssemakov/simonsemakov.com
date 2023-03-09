@@ -46,8 +46,6 @@ code {
   src: BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
-/* move to component css  */
-
 @keyframes gradient-flow {
   0% {
     background-position: 0% 50%;
@@ -62,9 +60,7 @@ code {
   }
 }
 
-.menu-icons {
-  font-size: 2em;
-}
+/* move to component css  */
 
 .full-height {
   min-height: 100vh;
