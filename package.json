@@ -2,6 +2,7 @@
   "name": "simonsemakov.com",
   "version": "0.3.0",
   "private": true,
+  "license": "UNLICENSED",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/server": "^11.10.0",
