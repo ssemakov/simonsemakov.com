@@ -15,7 +15,6 @@
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "next": "^13.2.3",
-    "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": ">= 2.7"
@@ -23,11 +22,15 @@
   "devDependencies": {
     "@types/node": "18.14.6",
     "autoprefixer": "^10.4.13",
+    "eslint": "8.35.0",
+    "eslint-config-next": "13.2.4",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.21",
     "postcss-100vh-fix": "^1.0.2",
     "postcss-cli": "^10.1.0",
-    "postcss-nested": "^6.0.1"
+    "postcss-nested": "^6.0.1",
+    "prettier": "^2.7.1",
+    "prettier-plugin-organize-imports": "^3.2.2"
   },
   "scripts": {
     "build": "next build",
