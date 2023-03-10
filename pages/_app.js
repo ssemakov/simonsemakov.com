@@ -1,3 +1,4 @@
+import React from "react";
 import Head from "next/head";
 import Script from "next/script";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -21,15 +22,17 @@ const clientSideEmotionCache = createEmotionCache();
 export default function HomePage() {
   return (
     <>
-      <Head>
-        <ViewportMetaLink />
-      </Head>
-      <CacheProvider value={clientSideEmotionCache}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline enableColorScheme />
-          <DefaultLayout />
-        </ThemeProvider>
-      </CacheProvider>
+      <React.StrictMode>
+        <Head>
+          <ViewportMetaLink />
+        </Head>
+        <CacheProvider value={clientSideEmotionCache}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline enableColorScheme />
+            <DefaultLayout />
+          </ThemeProvider>
+        </CacheProvider>
+      </React.StrictMode>
     </>
   );
 }
