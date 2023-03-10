@@ -1,8 +1,13 @@
 import { Grid } from "@mui/material";
-import HomePageContent from "./HomePageContent";
-import Sidebar from "./Sidebar";
+import HomePageContent from "../components/HomePageContent";
+import Sidebar from "../components/Sidebar";
 
-function Layout({ leftPaine: LeftPaine, rightPaine: RightPaine }) {
+interface LayoutProps {
+  leftPaine: React.FC;
+  rightPaine: React.FC;
+}
+
+function Layout({ leftPaine: LeftPaine, rightPaine: RightPaine }: LayoutProps) {
   return (
     <Grid container>
       <Grid item md={8}>

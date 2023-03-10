@@ -1,22 +1,23 @@
-import { AppBar, Drawer, IconButton, Toolbar } from "@mui/material";
+import { AppBar, Drawer, IconButton, Toolbar, IconButtonProps } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import BottomIconNavigation from "./BottomIconsNavigation";
 import SideMenu from "./SideMenu";
 import { BarsIcon, XMarkIcon } from "./icons";
 
-const drawerToggleButton = (Icon, direction) => (props) =>
-  (
-    <IconButton
-      color="inherit"
-      aria-label={`${direction} drawer`}
-      edge="end"
-      {...props}
-      sx={{ ml: { xs: 1 }, display: { md: "none" } }}
-    >
-      <Icon />
-    </IconButton>
-  );
+const drawerToggleButton = (Icon: React.FC, direction: "open" | "close") =>
+  (props: IconButtonProps) =>
+    (
+      <IconButton
+        color="inherit"
+        aria-label={`${direction} drawer`}
+        edge="end"
+        {...props}
+        sx={{ ml: { xs: 1 }, display: { md: "none" } }}
+      >
+        <Icon />
+      </IconButton>
+    );
 
 const OpenDrawerButton = drawerToggleButton(BarsIcon, "open");
 const CloseDrawerButton = drawerToggleButton(XMarkIcon, "close");
@@ -30,8 +31,11 @@ const Content = () => (
   </Box>
 );
 
-const ResponsiveSidebar = (props) => {
-  const { window } = props;
+interface ResponsiveSidebarProps {
+  window?: () => Window;
+}
+
+const ResponsiveSidebar = ({ window }: ResponsiveSidebarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const container =
     window !== undefined ? () => window().document.body : undefined;

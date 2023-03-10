@@ -1,7 +1,8 @@
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import Script from "next/script";
+import type { AppProps, AppType} from 'next/app'
+import Document, { Html, Head, Main, NextScript, DocumentContext, DocumentProps } from "next/document";
 import createEmotionServer from "@emotion/server/create-instance";
 import createEmotionCache from "../lib/emotionCache";
+import { TheAppProps } from "./_app";
 
 const metadata = {
   title: "Simon's page",
@@ -11,25 +12,27 @@ const metadata = {
   },
 };
 
-export default class TheDocument extends Document {
-  render() {
-    return (
-      <Html lang="en">
-        <Head>
-          {this.props.emotionStyleTags}
-          <meta name="description" content={metadata.description} />
-          <meta name="theme-color" content="#000000" />
-        </Head>
-        <body>
-          <Main />
-          <NextScript />
-        </body>
-      </Html>
-    );
-  }
+interface TheDocumentProps extends DocumentProps {
+  emotionStyleTags: JSX.Element[];
 }
 
-TheDocument.getInitialProps = async (context) => {
+export default function TheDocument({ emotionStyleTags }: TheDocumentProps) {
+  return (
+    <Html lang="en">
+      <Head>
+        <meta name="description" content={metadata.description} />
+        <meta name="theme-color" content="#000000" />
+        {emotionStyleTags}
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+
+TheDocument.getInitialProps = async (context: DocumentContext) => {
   const originalRenderPage = context.renderPage;
 
   const cache = createEmotionCache();
@@ -37,8 +40,8 @@ TheDocument.getInitialProps = async (context) => {
 
   context.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App) =>
-        function EnhanceApp(props) {
+      enhanceApp: (App: React.ComponentType<React.ComponentProps<AppType> & TheAppProps>) =>
+        function EnhanceApp(props: AppProps) {
           return <App emotionCache={cache} {...props} />;
         },
     });
