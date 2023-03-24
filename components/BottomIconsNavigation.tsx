@@ -1,6 +1,6 @@
 import { Grid, Link } from "@mui/material";
 import { Box } from "@mui/system";
-import { GitHubIcon, TwitterIcon, KeyBaseIcon } from "./icons";
+import { GitHubIcon, InstagramIcon, KeyBaseIcon, TwitterIcon } from "./icons";
 
 const BottomIconNavigation = () => (
   <Box
@@ -36,6 +36,16 @@ const BottomIconNavigation = () => (
           aria-label="Visit Simon's Keybase profile which opens in a new window."
         >
           <KeyBaseIcon />
+        </Link>
+      </Grid>
+      <Grid item>
+        <Link
+          href="https://instagram.com/ssemakov"
+          rel="noopener"
+          target="_blank"
+          aria-label="Visit Simon's Instagram profile which opens in a new window."
+        >
+          <InstagramIcon />
         </Link>
       </Grid>
     </Grid>

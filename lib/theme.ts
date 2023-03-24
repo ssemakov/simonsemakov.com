@@ -1,12 +1,6 @@
 import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
 let theme = createTheme({
-  palette: {
-    background: {
-      paper: "#c3c2fb",
-      default: "#c3c2fb",
-    },
-  },
   typography: {
     h1: {
       fontWeight: 300,
@@ -16,6 +10,18 @@ let theme = createTheme({
   zIndex: {
     drawer: 1100,
     appBar: 1200,
+  },
+  components: {
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#4e5a9e",
+          "&:hover": {
+            color: "#353e72",
+          },
+        },
+      },
+    },
   },
 });
 
