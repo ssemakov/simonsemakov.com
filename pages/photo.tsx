@@ -1,5 +1,5 @@
 import Grid from "@mui/material/Grid2";
-import HomePageContent from "../components/HomePageContent";
+import PhotoAlbums from "../components/PhotoAlbums";
 import Sidebar from "../components/Sidebar";
 
 interface LayoutProps {
@@ -10,10 +10,10 @@ interface LayoutProps {
 function Layout({ leftPaine: LeftPaine, rightPaine: RightPaine }: LayoutProps) {
   return (
     <Grid container>
-      <Grid size={8}>
+      <Grid size={10}>
         <LeftPaine />
       </Grid>
-      <Grid size={4}>
+      <Grid size={2}>
         <RightPaine />
       </Grid>
     </Grid>
@@ -21,5 +21,5 @@ function Layout({ leftPaine: LeftPaine, rightPaine: RightPaine }: LayoutProps) {
 }
 
 export default function DefaultLayout() {
-  return <Layout leftPaine={HomePageContent} rightPaine={Sidebar} />;
+  return <Layout leftPaine={PhotoAlbums} rightPaine={Sidebar} />;
 }
