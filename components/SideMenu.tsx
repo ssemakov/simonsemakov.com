@@ -1,4 +1,4 @@
-import { Container, Stack } from "@mui/material";
+import { Container, Link, Stack } from "@mui/material";
 import { Box } from "@mui/system";
 import GradientTypography from "./GradientTypography";
 
@@ -7,7 +7,12 @@ const SideMenu = () => (
     <Box m="auto">
       <Container>
         <Stack spacing={4}>
-          <GradientTypography variant="h4"></GradientTypography>
+          <Link href="/" aria-label="Navigation to photography page.">
+            <GradientTypography variant="h4">about me</GradientTypography>
+          </Link>
+          <Link href="/photo" aria-label="Navigation to photography page.">
+            <GradientTypography variant="h4">photography</GradientTypography>
+          </Link>
         </Stack>
       </Container>
     </Box>
