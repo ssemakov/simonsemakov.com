@@ -1,8 +1,10 @@
 import {
+  Box,
   Card,
   CardActionArea,
   CardContent,
   CardMedia,
+  Container,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
@@ -32,11 +34,11 @@ function PhotoAlbumCard({
   description: string;
 }) {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card>
       <CardActionArea>
         <CardMedia
           component="img"
-          height="140"
+          height="240"
           image={imageUrl}
           alt={imageAlt ?? title}
         />
@@ -55,14 +57,17 @@ function PhotoAlbumCard({
 
 export default function PhotoAlbums() {
   return (
-    <Grid container>
-      <Grid size={11}>
-        <PhotoAlbumCard
-          title="Istanbul"
-          description="Istanbul 2024"
-          imageUrl="https://img.playbook.com/BBWjA8ERhw3nmHtF9Vv65OOdSiZCaVLDBhBZk0du7K8/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljL2I2Yzk2NGVh/LWQyN2QtNGQzYy04/OTAyLWE5OGI5ZGVm/N2EyOA"
-        />
+    <Container fixed maxWidth="sm">
+      <Box sx={{ m: 8 }} />
+      <Grid container spacing={2} columns={12}>
+        <Grid size={8}>
+          <PhotoAlbumCard
+            title="Istanbul"
+            description="Istanbul 2024"
+            imageUrl="https://img.playbook.com/BBWjA8ERhw3nmHtF9Vv65OOdSiZCaVLDBhBZk0du7K8/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljL2I2Yzk2NGVh/LWQyN2QtNGQzYy04/OTAyLWE5OGI5ZGVm/N2EyOA"
+          />
+        </Grid>
       </Grid>
-    </Grid>
+    </Container>
   );
 }
