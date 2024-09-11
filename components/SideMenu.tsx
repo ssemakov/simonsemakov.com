@@ -10,7 +10,7 @@ const SideMenu = () => (
           <Link href="/" aria-label="Navigation to photography page.">
             <GradientTypography variant="h4">about me</GradientTypography>
           </Link>
-          <Link href="/photo" aria-label="Navigation to photography page.">
+          <Link href="/photos" aria-label="Navigation to photography page.">
             <GradientTypography variant="h4">photography</GradientTypography>
           </Link>
         </Stack>

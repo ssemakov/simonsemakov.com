@@ -1,12 +1,18 @@
-import { AppBar, Drawer, IconButton, Toolbar, IconButtonProps } from "@mui/material";
+import {
+  AppBar,
+  Drawer,
+  IconButton,
+  IconButtonProps,
+  Toolbar,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import BottomIconNavigation from "./BottomIconsNavigation";
-import SideMenu from "./SideMenu";
 import { BarsIcon, XMarkIcon } from "./icons";
+import SideMenu from "./SideMenu";
 
-const drawerToggleButton = (Icon: React.FC, direction: "open" | "close") =>
-  (props: IconButtonProps) =>
+const drawerToggleButton =
+  (Icon: React.FC, direction: "open" | "close") => (props: IconButtonProps) =>
     (
       <IconButton
         color="inherit"
@@ -55,7 +61,9 @@ const ResponsiveSidebar = ({ window }: ResponsiveSidebarProps) => {
         color="transparent"
         elevation={0}
         sx={{
-          width: { md: `calc(100% - ${drawerWidth}px)` },
+          width: {
+            md: `calc(100% - ${drawerWidth}px)`,
+          },
           ml: { md: `${drawerWidth}px` },
         }}
       >
