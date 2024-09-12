@@ -10,13 +10,14 @@ const Istanbul = () => {
     setWindowHeight(window.innerHeight - 100);
   };
   useEffect(() => {
+    handleResize();
     window.addEventListener("resize", handleResize, false);
   }, []);
 
   return (
     <Box sx={{ height: `${windowHeight}px` }}>
       <iframe
-        src="https://www.playbook.com/e/simons83/s6arErSms7dmM6w5VdrznbWa?theme=gallery"
+        src="https://www.playbook.com/e/simons83/rBJKZ5SfH2jjkCzz79puRe8V?theme=gallery"
         title="Istanbul"
         sandbox="allow-same-origin allow-scripts"
         frameBorder="0"
