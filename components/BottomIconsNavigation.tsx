@@ -1,4 +1,5 @@
-import { Grid, Link } from "@mui/material";
+import { Link } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Box } from "@mui/system";
 import { GitHubIcon, InstagramIcon, KeyBaseIcon, TwitterIcon } from "./icons";
 
@@ -7,7 +8,7 @@ const BottomIconNavigation = () => (
     sx={{ margin: "2em", position: "absolute", bottom: 0, left: 0, right: 0 }}
   >
     <Grid container direction="row" justifyContent="center" spacing={6}>
-      <Grid item>
+      <Grid>
         <Link
           href="https://github.com/ssemakov"
           rel="noopener"
@@ -18,7 +19,7 @@ const BottomIconNavigation = () => (
           <GitHubIcon />
         </Link>
       </Grid>
-      <Grid item>
+      <Grid>
         <Link
           href="https://twitter.com/ssemakov"
           rel="noopener"
@@ -28,7 +29,7 @@ const BottomIconNavigation = () => (
           <TwitterIcon />
         </Link>
       </Grid>
-      <Grid item>
+      <Grid>
         <Link
           href="https://keybase.io/ssemakov"
           rel="noopener"
@@ -38,7 +39,7 @@ const BottomIconNavigation = () => (
           <KeyBaseIcon />
         </Link>
       </Grid>
-      <Grid item>
+      <Grid>
         <Link
           href="https://instagram.com/ssemakov"
           rel="noopener"
