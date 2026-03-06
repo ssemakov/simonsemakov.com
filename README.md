@@ -5,12 +5,18 @@ The web-page can be found here https://simonsemakov.com
 
 ## Gumlet configuration
 
-Photo galleries now rely on Gumlet for media delivery. Create a `.env.local` file and
-configure the following variables before running the site locally:
+Photo galleries use Gumlet for media delivery and a local static manifest for album/photo data.
+Create a `.env.local` file and configure:
 
 ```
-GUMLET_API_KEY=your_gumlet_api_key
 NEXT_PUBLIC_GUMLET_DELIVERY_URL=https://<your-gumlet-source>.gumlet.io
 ```
 
-The provided `.env.local.example` file can be copied and updated with the correct values.
+Album metadata is defined in `lib/photoAlbumsManifest.ts`:
+- Add/remove albums there.
+- Add photos with either:
+  - `path` (relative to `NEXT_PUBLIC_GUMLET_DELIVERY_URL`), or
+  - `src` (fully-qualified URL).
+- Always include `width` and `height` for each photo.
+
+The provided `.env.local.example` file can be copied and updated.

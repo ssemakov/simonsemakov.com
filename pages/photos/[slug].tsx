@@ -5,7 +5,7 @@ import Layout from "../../components/Layout";
 import PhotoAlbumGallery from "../../components/PhotoAlbumGallery";
 import Sidebar from "../../components/Sidebar";
 import {
-  albumSlugs,
+  getPhotoAlbumSlugs,
   getPhotoAlbumBySlug,
 } from "../../lib/photoAlbums";
 import type { PhotoAlbumMetadata } from "../../lib/photoAlbums";
@@ -21,6 +21,8 @@ export default function PhotoAlbumPage({ album }: PhotoAlbumPageProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const albumSlugs = await getPhotoAlbumSlugs();
+
   return {
     paths: albumSlugs.map((slug) => ({ params: { slug } })),
     fallback: false,

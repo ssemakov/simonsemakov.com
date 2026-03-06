@@ -1,3 +1,10 @@
+import { resolveGumletPath } from "./gumlet";
+import {
+  photoAlbumsManifest,
+  type PhotoAlbumManifestEntry,
+  type PhotoManifestEntry,
+} from "./photoAlbumsManifest";
+
 export interface PhotoMetadata {
   src: string;
   width: number;
@@ -15,142 +22,97 @@ export interface PhotoAlbumMetadata {
   photos: PhotoMetadata[];
 }
 
-interface PhotoAlbumDefinition {
-  slug: string;
-  title: string;
-  description: string;
-  coverIndex?: number;
-  photos: PhotoMetadata[];
+let cachedPhotoAlbums: PhotoAlbumMetadata[] | undefined;
+
+function normalizeSlug(slug: string): string {
+  return slug
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
-function createPhotoMetadata(
-  src: string,
-  width: number,
-  height: number,
-  alt: string,
-  description: string,
-): PhotoMetadata {
+function resolvePhotoSource(photo: PhotoManifestEntry): string {
+  if (photo.src && photo.src.trim().length > 0) {
+    return photo.src;
+  }
+
+  if (photo.path && photo.path.trim().length > 0) {
+    return resolveGumletPath(photo.path);
+  }
+
+  throw new Error("Photo manifest entry must include either `src` or `path`.");
+}
+
+function buildPhotoMetadata(photo: PhotoManifestEntry): PhotoMetadata {
+  if (photo.width <= 0 || photo.height <= 0) {
+    throw new Error(`Invalid photo dimensions: ${photo.width}x${photo.height}`);
+  }
+
+  const src = resolvePhotoSource(photo);
+
   return {
     src,
-    width,
-    height,
-    alt,
-    title: alt,
-    description,
+    width: photo.width,
+    height: photo.height,
+    alt: photo.alt,
+    title: photo.title ?? photo.alt,
+    description: photo.description,
   };
 }
 
-const photoAlbumDefinitions: PhotoAlbumDefinition[] = [
-  {
-    slug: "istanbul",
-    title: "Istanbul",
-    description: "Scenes from springtime in Istanbul across the Bosphorus.",
-    coverIndex: 0,
-    photos: [
-      createPhotoMetadata(
-        "https://picsum.photos/seed/istanbul-blue-mosque/2048/1365",
-        2048,
-        1365,
-        "Blue Mosque skyline at sunset in Istanbul",
-        "Dusk settles over Sultanahmet and the historic skyline of Istanbul.",
-      ),
-      createPhotoMetadata(
-        "https://picsum.photos/seed/istanbul-grand-bazaar-lanterns/2048/1365",
-        2048,
-        1365,
-        "Lanterns hanging in the Grand Bazaar",
-        "Lantern merchants inside the Grand Bazaar glow with warm colors.",
-      ),
-      createPhotoMetadata(
-        "https://picsum.photos/seed/istanbul-galata-bridge-fishermen/2048/1366",
-        2048,
-        1366,
-        "Fishermen on the Galata Bridge",
-        "Morning fishermen line the Galata Bridge as ferries cross the Bosphorus.",
-      ),
-      createPhotoMetadata(
-        "https://picsum.photos/seed/istanbul-spice-market-stalls/2048/1280",
-        2048,
-        1280,
-        "Spice Market stalls in Istanbul",
-        "Spice Market stalls overflow with colors and textures in Eminonu.",
-      ),
-      createPhotoMetadata(
-        "https://picsum.photos/seed/istanbul-maidens-tower-sunset/2048/1365",
-        2048,
-        1365,
-        "View of the Bosphorus and Maiden's Tower",
-        "The Maiden's Tower stands against a hazy Bosphorus sunset.",
-      ),
-    ],
-  },
-  {
-    slug: "kyoto",
-    title: "Kyoto",
-    description: "A slow walk through Kyoto's temples, gardens, and lantern-lined alleys.",
-    coverIndex: 0,
-    photos: [
-      createPhotoMetadata(
-        "https://picsum.photos/seed/kyoto-fushimi-inari-gates/2048/1366",
-        2048,
-        1366,
-        "Torii gates at Fushimi Inari Shrine",
-        "The iconic vermillion torii gates wind up the hill at Fushimi Inari.",
-      ),
-      createPhotoMetadata(
-        "https://picsum.photos/seed/kyoto-gion-evening-houses/2048/1365",
-        2048,
-        1365,
-        "Traditional wooden houses in Gion",
-        "Evening light reflects on rain-soaked streets in the Gion district.",
-      ),
-      createPhotoMetadata(
-        "https://picsum.photos/seed/kyoto-kinkakuji-golden-pavilion/2048/1365",
-        2048,
-        1365,
-        "Kinkaku-ji Golden Pavilion",
-        "Kinkaku-ji's golden facade shines above a mirror-still pond.",
-      ),
-      createPhotoMetadata(
-        "https://picsum.photos/seed/kyoto-arashiyama-bamboo-grove/2048/1365",
-        2048,
-        1365,
-        "Arashiyama bamboo grove",
-        "Morning light filters through the towering stalks of Arashiyama's bamboo grove.",
-      ),
-      createPhotoMetadata(
-        "https://picsum.photos/seed/kyoto-zen-garden-stones/2048/1280",
-        2048,
-        1280,
-        "Zen garden stones and raked gravel",
-        "A tranquil karesansui garden highlights Kyoto's minimalist design.",
-      ),
-    ],
-  },
-];
+function buildAlbumMetadata(album: PhotoAlbumManifestEntry): PhotoAlbumMetadata {
+  const slug = normalizeSlug(album.slug);
+  if (!slug) {
+    throw new Error(`Album slug is invalid: "${album.slug}"`);
+  }
 
-const photoAlbums: PhotoAlbumMetadata[] = photoAlbumDefinitions.map((albumDefinition) => {
-  const coverImage = albumDefinition.photos[albumDefinition.coverIndex ?? 0];
+  if (!album.photos.length) {
+    throw new Error(`Album "${slug}" has no photos.`);
+  }
+
+  const photos = album.photos.map(buildPhotoMetadata);
+  const coverPhotoIndex = album.coverPhotoIndex ?? 0;
+  const coverImage = photos[coverPhotoIndex] ?? photos[0];
 
   return {
-    slug: albumDefinition.slug,
-    title: albumDefinition.title,
-    description: albumDefinition.description,
+    slug,
+    title: album.title,
+    description: album.description,
     coverImage,
-    photos: albumDefinition.photos,
+    photos,
   };
-});
+}
 
-const albumsBySlug = new Map(photoAlbums.map((album) => [album.slug, album]));
+function loadAlbumsFromManifest(): PhotoAlbumMetadata[] {
+  if (!cachedPhotoAlbums) {
+    const albums = photoAlbumsManifest.map(buildAlbumMetadata);
+    const slugSet = new Set<string>();
 
-export const albumSlugs = photoAlbums.map((album) => album.slug);
+    for (const album of albums) {
+      if (slugSet.has(album.slug)) {
+        throw new Error(`Duplicate album slug in manifest: "${album.slug}"`);
+      }
+
+      slugSet.add(album.slug);
+    }
+
+    cachedPhotoAlbums = albums;
+  }
+
+  return cachedPhotoAlbums;
+}
+
+export async function getPhotoAlbumSlugs(): Promise<string[]> {
+  return loadAlbumsFromManifest().map((album) => album.slug);
+}
 
 export async function getPhotoAlbumBySlug(
   slug: string,
 ): Promise<PhotoAlbumMetadata | undefined> {
-  return albumsBySlug.get(slug);
+  return loadAlbumsFromManifest().find((album) => album.slug === slug);
 }
 
 export async function getAllPhotoAlbums(): Promise<PhotoAlbumMetadata[]> {
-  return photoAlbums;
+  return loadAlbumsFromManifest();
 }
