@@ -60,7 +60,7 @@ export default function PhotoAlbumGallery({ album }: PhotoAlbumGalleryProps) {
           padding={0}
           photos={album.photos}
           columns={getColumnCount}
-          onClick={({ index }) => setLightboxIndex(index)}
+          onClick={(_, __, index) => setLightboxIndex(index)}
         />
       </Box>
       <Lightbox
