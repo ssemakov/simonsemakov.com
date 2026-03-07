@@ -5,6 +5,7 @@ import {
   SyntheticEvent,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import PhotoAlbum from "react-photo-album";
@@ -58,6 +59,8 @@ function ProgressivePhoto({
   wrapperStyle,
 }: ProgressivePhotoProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const previewSrc = useMemo(
     () => getPreviewImageSrc(src, layoutWidth),
@@ -70,16 +73,51 @@ function ProgressivePhoto({
   );
 
   useEffect(() => {
+    setShouldLoad(false);
     setIsLoaded(false);
   }, [previewSrc]);
 
+  useEffect(() => {
+    if (shouldLoad) {
+      return;
+    }
+
+    const currentElement = wrapperRef.current;
+    if (!currentElement) {
+      return;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setShouldLoad(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting || entry.intersectionRatio > 0)) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: "280px 0px",
+      }
+    );
+
+    observer.observe(currentElement);
+
+    return () => observer.disconnect();
+  }, [shouldLoad, previewSrc]);
+
   return (
-    <Box position="relative" overflow="hidden" style={wrapperStyle}>
+    <Box ref={wrapperRef} position="relative" overflow="hidden" style={wrapperStyle}>
       <Box
         component="img"
-        src={blurredSrc}
+        src={shouldLoad ? blurredSrc : undefined}
         alt=""
         aria-hidden
+        loading="lazy"
+        decoding="async"
         sx={{
           position: "absolute",
           inset: 0,
@@ -95,7 +133,9 @@ function ProgressivePhoto({
       <Box
         component="img"
         {...imageProps}
-        src={previewSrc}
+        src={shouldLoad ? previewSrc : undefined}
+        loading="lazy"
+        decoding="async"
         onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
           setIsLoaded(true);
           imageProps.onLoad?.(event);
