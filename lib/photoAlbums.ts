@@ -50,15 +50,26 @@ function buildPhotoMetadata(photo: PhotoManifestEntry): PhotoMetadata {
   }
 
   const src = resolvePhotoSource(photo);
-
-  return {
+  const metadata: PhotoMetadata = {
     src,
     width: photo.width,
     height: photo.height,
-    alt: photo.alt,
-    title: photo.title ?? photo.alt,
-    description: photo.description,
   };
+
+  if (typeof photo.alt === "string" && photo.alt.trim().length > 0) {
+    metadata.alt = photo.alt;
+  }
+
+  const title = photo.title ?? photo.alt;
+  if (typeof title === "string" && title.trim().length > 0) {
+    metadata.title = title;
+  }
+
+  if (typeof photo.description === "string" && photo.description.trim().length > 0) {
+    metadata.description = photo.description;
+  }
+
+  return metadata;
 }
 
 function buildAlbumMetadata(album: PhotoAlbumManifestEntry): PhotoAlbumMetadata {
