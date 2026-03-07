@@ -33,7 +33,10 @@ export default function PhotoAlbumGallery({ album }: PhotoAlbumGalleryProps) {
   );
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
+    <Container
+      maxWidth="lg"
+      sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 6, md: 10 } }}
+    >
       <Box
         maxWidth={{ xs: "100%", md: "80%" }}
         mx="auto"

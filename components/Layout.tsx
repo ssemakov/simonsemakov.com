@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
 interface LayoutProps {
@@ -12,7 +13,9 @@ export default function Layout({
   return (
     <Grid container>
       <Grid size={{ xs: 12, sm: 12, md: 10 }}>
-        <LeftPaine />
+        <Box pt={{ xs: 4, md: 4 }}>
+          <LeftPaine />
+        </Box>
       </Grid>
       <Grid size={{ xs: 0, sm: 0, md: 2 }}>
         <RightPaine />
