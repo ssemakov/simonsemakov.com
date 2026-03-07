@@ -11,6 +11,8 @@ import createEmotionCache from "../lib/emotionCache";
 import theme from "../lib/theme";
 
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/captions.css";
 require("../styles/globals.css");
 
 config.autoAddCss = false;
