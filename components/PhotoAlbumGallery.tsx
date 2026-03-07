@@ -1,9 +1,17 @@
 import { Box, Container, Typography } from "@mui/material";
-import { useMemo, useState } from "react";
+import {
+  CSSProperties,
+  ImgHTMLAttributes,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import PhotoAlbum from "react-photo-album";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 
+import { withGumletModifiers } from "../lib/gumlet";
 import type { PhotoAlbumMetadata } from "../lib/photoAlbums";
 
 interface PhotoAlbumGalleryProps {
@@ -17,6 +25,95 @@ const getColumnCount = (containerWidth: number) => {
   return 4;
 };
 
+const getPreviewImageSrc = (src: string, layoutWidth: number) =>
+  withGumletModifiers(src, {
+    w: Math.max(320, Math.round(layoutWidth * 2)),
+    q: 72,
+    format: "auto",
+  });
+
+const getBlurredPlaceholderSrc = (src: string, layoutWidth: number) =>
+  withGumletModifiers(src, {
+    w: Math.max(48, Math.round(layoutWidth / 8)),
+    q: 20,
+    blur: 1,
+    format: "auto",
+  });
+
+interface ProgressivePhotoProps {
+  src: string;
+  layoutWidth: number;
+  imageProps: ImgHTMLAttributes<HTMLImageElement> & {
+    src: string;
+    alt: string;
+    style: CSSProperties;
+  };
+  wrapperStyle: CSSProperties;
+}
+
+function ProgressivePhoto({
+  src,
+  layoutWidth,
+  imageProps,
+  wrapperStyle,
+}: ProgressivePhotoProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const previewSrc = useMemo(
+    () => getPreviewImageSrc(src, layoutWidth),
+    [layoutWidth, src]
+  );
+
+  const blurredSrc = useMemo(
+    () => getBlurredPlaceholderSrc(src, layoutWidth),
+    [layoutWidth, src]
+  );
+
+  useEffect(() => {
+    setIsLoaded(false);
+  }, [previewSrc]);
+
+  return (
+    <Box position="relative" overflow="hidden" style={wrapperStyle}>
+      <Box
+        component="img"
+        src={blurredSrc}
+        alt=""
+        aria-hidden
+        sx={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          filter: "blur(18px) saturate(1.1)",
+          transform: "scale(1.06)",
+          transition: "opacity 220ms ease",
+          opacity: isLoaded ? 0 : 1,
+        }}
+      />
+      <Box
+        component="img"
+        {...imageProps}
+        src={previewSrc}
+        onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
+          setIsLoaded(true);
+          imageProps.onLoad?.(event);
+        }}
+        sx={{
+          ...imageProps.style,
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transition: "opacity 220ms ease",
+          opacity: isLoaded ? 1 : 0,
+        }}
+      />
+    </Box>
+  );
+}
+
 export default function PhotoAlbumGallery({ album }: PhotoAlbumGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState(-1);
 
@@ -29,7 +126,7 @@ export default function PhotoAlbumGallery({ album }: PhotoAlbumGalleryProps) {
         alt: photo.alt,
         description: photo.description,
       })),
-    [album.photos],
+    [album.photos]
   );
 
   return (
@@ -64,6 +161,14 @@ export default function PhotoAlbumGallery({ album }: PhotoAlbumGalleryProps) {
           photos={album.photos}
           columns={getColumnCount}
           onClick={(_, __, index) => setLightboxIndex(index)}
+          renderPhoto={({ photo, layout, imageProps, wrapperStyle }) => (
+            <ProgressivePhoto
+              src={photo.src}
+              layoutWidth={layout.width}
+              imageProps={imageProps}
+              wrapperStyle={wrapperStyle}
+            />
+          )}
         />
       </Box>
       <Lightbox
