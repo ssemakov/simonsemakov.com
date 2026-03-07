@@ -39,6 +39,7 @@
     "build": "next build",
     "dev": "next dev",
     "export": "next export",
+    "sync:photos": "node scripts/sync-photo-manifest-from-b2.mjs",
     "start": "next start",
     "lint": "next lint"
   },
