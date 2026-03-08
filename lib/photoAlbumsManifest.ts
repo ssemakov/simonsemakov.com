@@ -22,7 +22,7 @@ export const photoAlbumsManifest: PhotoAlbumManifestEntry[] = [
   {
     slug: "istanbul",
     title: "Istanbul",
-    description: "Photo album: Istanbul",
+    description: "",
     coverPhotoIndex: 0,
     photos: [
       {
