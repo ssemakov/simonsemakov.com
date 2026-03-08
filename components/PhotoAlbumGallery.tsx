@@ -28,16 +28,24 @@ const getColumnCount = (containerWidth: number) => {
   return 4;
 };
 
+const quantizeWidth = (width: number, step: number) => {
+  if (width <= 0) {
+    return step;
+  }
+
+  return Math.max(step, Math.round(width / step) * step);
+};
+
 const getPreviewImageSrc = (src: string, layoutWidth: number) =>
   withGumletModifiers(src, {
-    w: Math.max(320, Math.round(layoutWidth * 2)),
+    w: Math.max(320, quantizeWidth(layoutWidth * 2, 160)),
     q: 72,
     format: "auto",
   });
 
 const getBlurredPlaceholderSrc = (src: string, layoutWidth: number) =>
   withGumletModifiers(src, {
-    w: Math.max(48, Math.round(layoutWidth / 8)),
+    w: Math.max(48, quantizeWidth(layoutWidth / 8, 24)),
     q: 20,
     blur: 40,
     format: "auto",
@@ -62,31 +70,11 @@ const fullImagePreloadPromises = new Map<string, Promise<void>>();
 const fullImageReady = new Set<string>();
 const stageImagePreloadPromises = new Map<string, Promise<void>>();
 const stageImageReady = new Set<string>();
-
-function isPhotoDebugEnabled(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    (window.location.search.includes("photoDebug=1") ||
-      window.localStorage.getItem("photoDebug") === "1")
-  );
-}
-
-function debugPhoto(event: string, payload?: Record<string, unknown>) {
-  if (!isPhotoDebugEnabled()) {
-    return;
-  }
-
-  if (payload) {
-    console.log(`[photo-lightbox] ${event}`, payload);
-    return;
-  }
-
-  console.log(`[photo-lightbox] ${event}`);
-}
-
-function shortSrc(src: string): string {
-  return src.split("/").slice(-2).join("/") || src;
-}
+const previewImagePreloadPromises = new Map<string, Promise<void>>();
+const previewImageReady = new Set<string>();
+const previewRequestedSources = new Set<string>();
+const previewVariantBySource = new Map<string, string>();
+const previewDisplayedSources = new Set<string>();
 
 function ensureFullImagePreload(src: string): Promise<void> {
   if (fullImageReady.has(src)) {
@@ -129,6 +117,28 @@ function ensureStageImagePreload(src: string): Promise<void> {
     });
 
   stageImagePreloadPromises.set(src, preloadPromise);
+  return preloadPromise;
+}
+
+function ensurePreviewImagePreload(src: string): Promise<void> {
+  if (previewImageReady.has(src)) {
+    return Promise.resolve();
+  }
+
+  const existingPromise = previewImagePreloadPromises.get(src);
+  if (existingPromise) {
+    return existingPromise;
+  }
+
+  const preloadPromise = preloadImage(src)
+    .then(() => {
+      previewImageReady.add(src);
+    })
+    .finally(() => {
+      previewImagePreloadPromises.delete(src);
+    });
+
+  previewImagePreloadPromises.set(src, preloadPromise);
   return preloadPromise;
 }
 
@@ -189,6 +199,7 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
   const previousSourceRef = useRef(source);
   const visibleBlurStageRef = useRef(visibleBlurStage);
   const incomingBlurStageRef = useRef<ProgressiveStage | null>(incomingBlurStage);
+  const showFullImageRef = useRef(showFullImage);
 
   const revealFinalImage = () => {
     const image = finalImageRef.current;
@@ -215,6 +226,10 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
   }, [incomingBlurStage]);
 
   useEffect(() => {
+    showFullImageRef.current = showFullImage;
+  }, [showFullImage]);
+
+  useEffect(() => {
     if (!source) {
       setIsFullReady(false);
       setShowFullImage(false);
@@ -238,27 +253,7 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
     setIncomingBlurStage(null);
     incomingBlurStageRef.current = null;
     setIncomingVisible(false);
-
-    debugPhoto("source-change", {
-      source: shortSrc(source),
-      alreadyReady,
-      shouldAttachFullImage,
-      firstStage: shortSrc(firstStage.src),
-    });
   }, [blurStages, shouldAttachFullImage, source]);
-
-  useEffect(() => {
-    if (!source) {
-      return;
-    }
-
-    debugPhoto("slide-mounted", {
-      source: shortSrc(source),
-      offset,
-      rectWidth: Math.round(rect.width),
-      debugEnabled: isPhotoDebugEnabled(),
-    });
-  }, [offset, rect.width, source]);
 
   useEffect(() => {
     return () => {
@@ -269,12 +264,12 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
   }, []);
 
   const transitionToBlurStage = useCallback(
-    (stage: ProgressiveStage) => {
+    (stage: ProgressiveStage): Promise<void> => {
       if (
         stage.src === visibleBlurStageRef.current.src ||
         stage.src === incomingBlurStageRef.current?.src
       ) {
-        return;
+        return Promise.resolve();
       }
 
       if (blurTransitionTimerRef.current !== null) {
@@ -285,28 +280,40 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
       setIncomingBlurStage(stage);
       setIncomingVisible(false);
 
-      debugPhoto("stage-transition-start", {
-        source: shortSrc(source),
-        from: shortSrc(visibleBlurStageRef.current.src),
-        to: shortSrc(stage.src),
-      });
+      return new Promise((resolve) => {
+        window.requestAnimationFrame(() => {
+          if (showFullImageRef.current) {
+            setIncomingBlurStage(null);
+            setIncomingVisible(false);
+            resolve();
+            return;
+          }
 
-      window.requestAnimationFrame(() => {
-        setIncomingVisible(true);
-        blurTransitionTimerRef.current = window.setTimeout(() => {
-          setVisibleBlurStage(stage);
-          setIncomingBlurStage(null);
-          setIncomingVisible(false);
-          blurTransitionTimerRef.current = null;
-          debugPhoto("stage-transition-commit", {
-            source: shortSrc(source),
-            visible: shortSrc(stage.src),
-          });
-        }, 220);
+          setIncomingVisible(true);
+          blurTransitionTimerRef.current = window.setTimeout(() => {
+            setVisibleBlurStage(stage);
+            setIncomingBlurStage(null);
+            setIncomingVisible(false);
+            blurTransitionTimerRef.current = null;
+            resolve();
+          }, 220);
+        });
       });
     },
-    [source]
+    []
   );
+
+  useEffect(() => {
+    if (showFullImage) {
+      if (blurTransitionTimerRef.current !== null) {
+        window.clearTimeout(blurTransitionTimerRef.current);
+        blurTransitionTimerRef.current = null;
+      }
+
+      setIncomingBlurStage(null);
+      setIncomingVisible(false);
+    }
+  }, [showFullImage, source]);
 
   useEffect(() => {
     if (!source || isFullReady) {
@@ -314,7 +321,6 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
     }
 
     let canceled = false;
-    debugPhoto("full-preload-start", { source: shortSrc(source) });
 
     void ensureFullImagePreload(source)
       .then(() => {
@@ -322,7 +328,6 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
           return;
         }
         setIsFullReady(true);
-        debugPhoto("full-preload-ready", { source: shortSrc(source) });
       })
       .catch(() => undefined);
 
@@ -349,15 +354,7 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
         }
 
         try {
-          debugPhoto("stage-preload-start", {
-            source: shortSrc(source),
-            stage: shortSrc(stage.src),
-          });
           await ensureStageImagePreload(stage.src);
-          debugPhoto("stage-preload-ready", {
-            source: shortSrc(source),
-            stage: shortSrc(stage.src),
-          });
         } catch {
           continue;
         }
@@ -367,7 +364,7 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
         }
 
         if (isActiveSlide) {
-          transitionToBlurStage(stage);
+          await transitionToBlurStage(stage);
         }
       }
     })();
@@ -483,7 +480,6 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
         decoding="async"
         onLoad={() => {
           revealFinalImage();
-          debugPhoto("full-image-shown", { source: shortSrc(source) });
         }}
         sx={{
           position: "absolute",
@@ -517,13 +513,19 @@ function ProgressivePhoto({
   imageProps,
   wrapperStyle,
 }: ProgressivePhotoProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [shouldLoad, setShouldLoad] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(() => previewRequestedSources.has(src));
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const previewSrc = useMemo(
     () => getPreviewImageSrc(src, layoutWidth),
     [layoutWidth, src]
+  );
+  const [effectivePreviewSrc, setEffectivePreviewSrc] = useState(
+    () => previewVariantBySource.get(src) ?? previewSrc
+  );
+  const [isLoaded, setIsLoaded] = useState(() =>
+    previewDisplayedSources.has(src) ||
+    previewImageReady.has(previewVariantBySource.get(src) ?? previewSrc)
   );
 
   const blurredSrc = useMemo(
@@ -532,9 +534,12 @@ function ProgressivePhoto({
   );
 
   useEffect(() => {
-    setShouldLoad(false);
-    setIsLoaded(false);
-  }, [previewSrc]);
+    const cachedVariant = previewVariantBySource.get(src);
+    const nextPreviewSrc = cachedVariant ?? previewSrc;
+    setEffectivePreviewSrc(nextPreviewSrc);
+    setShouldLoad(previewRequestedSources.has(src));
+    setIsLoaded(previewDisplayedSources.has(src) || previewImageReady.has(nextPreviewSrc));
+  }, [layoutWidth, previewSrc, src]);
 
   useEffect(() => {
     if (shouldLoad) {
@@ -546,7 +551,21 @@ function ProgressivePhoto({
       return;
     }
 
+    if (typeof window !== "undefined") {
+      const rect = currentElement.getBoundingClientRect();
+      const margin = 280;
+      const isNearViewport =
+        rect.bottom >= -margin && rect.top <= window.innerHeight + margin;
+
+      if (isNearViewport) {
+        previewRequestedSources.add(src);
+        setShouldLoad(true);
+        return;
+      }
+    }
+
     if (typeof IntersectionObserver === "undefined") {
+      previewRequestedSources.add(src);
       setShouldLoad(true);
       return;
     }
@@ -554,6 +573,7 @@ function ProgressivePhoto({
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting || entry.intersectionRatio > 0)) {
+          previewRequestedSources.add(src);
           setShouldLoad(true);
           observer.disconnect();
         }
@@ -566,13 +586,52 @@ function ProgressivePhoto({
     observer.observe(currentElement);
 
     return () => observer.disconnect();
-  }, [shouldLoad, previewSrc]);
+  }, [shouldLoad, src]);
+
+  useEffect(() => {
+    if (!shouldLoad) {
+      return;
+    }
+
+    const cachedVariant = previewVariantBySource.get(src);
+    const nextPreviewSrc = cachedVariant ?? previewSrc;
+
+    if (!cachedVariant) {
+      previewVariantBySource.set(src, nextPreviewSrc);
+    }
+
+    if (effectivePreviewSrc !== nextPreviewSrc) {
+      setEffectivePreviewSrc(nextPreviewSrc);
+    }
+
+    if (previewImageReady.has(nextPreviewSrc)) {
+      previewDisplayedSources.add(src);
+      setIsLoaded(true);
+      return;
+    }
+
+    let canceled = false;
+
+    void ensurePreviewImagePreload(nextPreviewSrc)
+      .then(() => {
+        if (canceled) {
+          return;
+        }
+        previewDisplayedSources.add(src);
+        setIsLoaded(true);
+      })
+      .catch(() => undefined);
+
+    return () => {
+      canceled = true;
+    };
+  }, [effectivePreviewSrc, previewSrc, shouldLoad, src]);
 
   return (
     <Box ref={wrapperRef} position="relative" overflow="hidden" style={wrapperStyle}>
       <Box
         component="img"
-        src={shouldLoad ? blurredSrc : undefined}
+        src={blurredSrc}
         alt=""
         aria-hidden
         loading="lazy"
@@ -592,10 +651,14 @@ function ProgressivePhoto({
       <Box
         component="img"
         {...imageProps}
-        src={shouldLoad ? previewSrc : undefined}
+        src={shouldLoad ? effectivePreviewSrc : undefined}
         loading="lazy"
         decoding="async"
         onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
+          if (effectivePreviewSrc) {
+            previewImageReady.add(effectivePreviewSrc);
+          }
+          previewDisplayedSources.add(src);
           setIsLoaded(true);
           imageProps.onLoad?.(event);
         }}
