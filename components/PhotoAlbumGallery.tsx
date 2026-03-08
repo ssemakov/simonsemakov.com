@@ -1,5 +1,6 @@
 import { Box, Container, Typography } from "@mui/material";
 import {
+  useCallback,
   CSSProperties,
   ImgHTMLAttributes,
   useRef,
@@ -59,6 +60,33 @@ function preloadImage(src: string): Promise<void> {
 
 const fullImagePreloadPromises = new Map<string, Promise<void>>();
 const fullImageReady = new Set<string>();
+const stageImagePreloadPromises = new Map<string, Promise<void>>();
+const stageImageReady = new Set<string>();
+
+function isPhotoDebugEnabled(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    (window.location.search.includes("photoDebug=1") ||
+      window.localStorage.getItem("photoDebug") === "1")
+  );
+}
+
+function debugPhoto(event: string, payload?: Record<string, unknown>) {
+  if (!isPhotoDebugEnabled()) {
+    return;
+  }
+
+  if (payload) {
+    console.log(`[photo-lightbox] ${event}`, payload);
+    return;
+  }
+
+  console.log(`[photo-lightbox] ${event}`);
+}
+
+function shortSrc(src: string): string {
+  return src.split("/").slice(-2).join("/") || src;
+}
 
 function ensureFullImagePreload(src: string): Promise<void> {
   if (fullImageReady.has(src)) {
@@ -79,6 +107,28 @@ function ensureFullImagePreload(src: string): Promise<void> {
     });
 
   fullImagePreloadPromises.set(src, preloadPromise);
+  return preloadPromise;
+}
+
+function ensureStageImagePreload(src: string): Promise<void> {
+  if (stageImageReady.has(src)) {
+    return Promise.resolve();
+  }
+
+  const existingPromise = stageImagePreloadPromises.get(src);
+  if (existingPromise) {
+    return existingPromise;
+  }
+
+  const preloadPromise = preloadImage(src)
+    .then(() => {
+      stageImageReady.add(src);
+    })
+    .finally(() => {
+      stageImagePreloadPromises.delete(src);
+    });
+
+  stageImagePreloadPromises.set(src, preloadPromise);
   return preloadPromise;
 }
 
@@ -125,11 +175,20 @@ interface ProgressiveLightboxSlideProps {
 function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSlideProps) {
   const source = "src" in slide && typeof slide.src === "string" ? slide.src : "";
   const isActiveSlide = offset === 0;
+  const shouldAttachFullImage = Math.abs(offset) <= 1;
   const blurStages = useMemo(() => getLightboxBlurStages(source, rect.width), [rect.width, source]);
-  const [activeBlurStage, setActiveBlurStage] = useState(blurStages[0]);
+  const [visibleBlurStage, setVisibleBlurStage] = useState(blurStages[0]);
+  const [incomingBlurStage, setIncomingBlurStage] = useState<ProgressiveStage | null>(
+    null
+  );
+  const [incomingVisible, setIncomingVisible] = useState(false);
   const [isFullReady, setIsFullReady] = useState(Boolean(source && fullImageReady.has(source)));
   const [showFullImage, setShowFullImage] = useState(false);
   const finalImageRef = useRef<HTMLImageElement | null>(null);
+  const blurTransitionTimerRef = useRef<number | null>(null);
+  const previousSourceRef = useRef(source);
+  const visibleBlurStageRef = useRef(visibleBlurStage);
+  const incomingBlurStageRef = useRef<ProgressiveStage | null>(incomingBlurStage);
 
   const revealFinalImage = () => {
     const image = finalImageRef.current;
@@ -148,16 +207,106 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
   };
 
   useEffect(() => {
+    visibleBlurStageRef.current = visibleBlurStage;
+  }, [visibleBlurStage]);
+
+  useEffect(() => {
+    incomingBlurStageRef.current = incomingBlurStage;
+  }, [incomingBlurStage]);
+
+  useEffect(() => {
     if (!source) {
       setIsFullReady(false);
       setShowFullImage(false);
+      setIncomingBlurStage(null);
+      previousSourceRef.current = source;
       return;
     }
 
+    if (source === previousSourceRef.current) {
+      return;
+    }
+
+    previousSourceRef.current = source;
+
     const alreadyReady = fullImageReady.has(source);
+    const firstStage = blurStages[0];
     setIsFullReady(alreadyReady);
-    setShowFullImage(false);
-  }, [source]);
+    setShowFullImage(alreadyReady && shouldAttachFullImage);
+    setVisibleBlurStage(firstStage);
+    visibleBlurStageRef.current = firstStage;
+    setIncomingBlurStage(null);
+    incomingBlurStageRef.current = null;
+    setIncomingVisible(false);
+
+    debugPhoto("source-change", {
+      source: shortSrc(source),
+      alreadyReady,
+      shouldAttachFullImage,
+      firstStage: shortSrc(firstStage.src),
+    });
+  }, [blurStages, shouldAttachFullImage, source]);
+
+  useEffect(() => {
+    if (!source) {
+      return;
+    }
+
+    debugPhoto("slide-mounted", {
+      source: shortSrc(source),
+      offset,
+      rectWidth: Math.round(rect.width),
+      debugEnabled: isPhotoDebugEnabled(),
+    });
+  }, [offset, rect.width, source]);
+
+  useEffect(() => {
+    return () => {
+      if (blurTransitionTimerRef.current !== null) {
+        window.clearTimeout(blurTransitionTimerRef.current);
+      }
+    };
+  }, []);
+
+  const transitionToBlurStage = useCallback(
+    (stage: ProgressiveStage) => {
+      if (
+        stage.src === visibleBlurStageRef.current.src ||
+        stage.src === incomingBlurStageRef.current?.src
+      ) {
+        return;
+      }
+
+      if (blurTransitionTimerRef.current !== null) {
+        window.clearTimeout(blurTransitionTimerRef.current);
+        blurTransitionTimerRef.current = null;
+      }
+
+      setIncomingBlurStage(stage);
+      setIncomingVisible(false);
+
+      debugPhoto("stage-transition-start", {
+        source: shortSrc(source),
+        from: shortSrc(visibleBlurStageRef.current.src),
+        to: shortSrc(stage.src),
+      });
+
+      window.requestAnimationFrame(() => {
+        setIncomingVisible(true);
+        blurTransitionTimerRef.current = window.setTimeout(() => {
+          setVisibleBlurStage(stage);
+          setIncomingBlurStage(null);
+          setIncomingVisible(false);
+          blurTransitionTimerRef.current = null;
+          debugPhoto("stage-transition-commit", {
+            source: shortSrc(source),
+            visible: shortSrc(stage.src),
+          });
+        }, 220);
+      });
+    },
+    [source]
+  );
 
   useEffect(() => {
     if (!source || isFullReady) {
@@ -165,6 +314,7 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
     }
 
     let canceled = false;
+    debugPhoto("full-preload-start", { source: shortSrc(source) });
 
     void ensureFullImagePreload(source)
       .then(() => {
@@ -172,6 +322,7 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
           return;
         }
         setIsFullReady(true);
+        debugPhoto("full-preload-ready", { source: shortSrc(source) });
       })
       .catch(() => undefined);
 
@@ -186,19 +337,27 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
     }
 
     let canceled = false;
-    const firstStage = blurStages[0];
     const laterStages = blurStages.slice(1);
-
-    setActiveBlurStage(firstStage);
+    const currentVisibleSrc = visibleBlurStageRef.current.src;
+    const currentIndex = blurStages.findIndex((stage) => stage.src === currentVisibleSrc);
+    const startIndex = currentIndex >= 0 ? currentIndex + 1 : 1;
 
     void (async () => {
-      for (const stage of laterStages) {
+      for (const stage of laterStages.slice(Math.max(0, startIndex - 1))) {
         if (canceled || fullImageReady.has(source)) {
           return;
         }
 
         try {
-          await preloadImage(stage.src);
+          debugPhoto("stage-preload-start", {
+            source: shortSrc(source),
+            stage: shortSrc(stage.src),
+          });
+          await ensureStageImagePreload(stage.src);
+          debugPhoto("stage-preload-ready", {
+            source: shortSrc(source),
+            stage: shortSrc(stage.src),
+          });
         } catch {
           continue;
         }
@@ -208,7 +367,7 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
         }
 
         if (isActiveSlide) {
-          setActiveBlurStage(stage);
+          transitionToBlurStage(stage);
         }
       }
     })();
@@ -216,10 +375,10 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
     return () => {
       canceled = true;
     };
-  }, [blurStages, isActiveSlide, isFullReady, source]);
+  }, [blurStages, isActiveSlide, isFullReady, source, transitionToBlurStage]);
 
   useEffect(() => {
-    if (!isFullReady) {
+    if (!isFullReady || !shouldAttachFullImage) {
       return;
     }
 
@@ -227,13 +386,13 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
     if (finalImage?.complete) {
       revealFinalImage();
     }
-  }, [isFullReady, source]);
+  }, [isFullReady, shouldAttachFullImage, source]);
 
   if (!source) {
     return null;
   }
 
-  const fallbackStage = isActiveSlide ? activeBlurStage : blurStages[0];
+  const fallbackStage = isActiveSlide ? visibleBlurStage : blurStages[0];
 
   return (
     <Box position="relative" width="100%" height="100%">
@@ -256,15 +415,75 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
           opacity: showFullImage ? 0 : 1,
         }}
       />
+      {incomingBlurStage ? (
+        <Box
+          component="img"
+          src={incomingBlurStage.src}
+          alt=""
+          aria-hidden
+          loading="eager"
+          decoding="async"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            filter: `blur(${incomingBlurStage.cssBlur}px)`,
+            transform: incomingBlurStage.cssBlur > 0 ? "scale(1.01)" : "none",
+            transition: "opacity 220ms ease",
+            opacity: incomingVisible && !showFullImage ? 1 : 0,
+          }}
+        />
+      ) : null}
+      <Box
+        aria-hidden
+        sx={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+          opacity: !showFullImage && isActiveSlide ? 1 : 0,
+          transition: "opacity 180ms ease",
+        }}
+      >
+        <Box
+          sx={{
+            width: 10,
+            height: 10,
+            borderRadius: "50%",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            boxShadow: "0 0 0 0 rgba(255, 255, 255, 0.55)",
+            animation: "photoLoadingPulse 1.1s ease-in-out infinite",
+            "@keyframes photoLoadingPulse": {
+              "0%": {
+                transform: "scale(0.9)",
+                boxShadow: "0 0 0 0 rgba(255, 255, 255, 0.45)",
+              },
+              "70%": {
+                transform: "scale(1.1)",
+                boxShadow: "0 0 0 14px rgba(255, 255, 255, 0)",
+              },
+              "100%": {
+                transform: "scale(0.9)",
+                boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
+              },
+            },
+          }}
+        />
+      </Box>
       <Box
         component="img"
         ref={finalImageRef}
-        src={isFullReady ? source : undefined}
+        src={isFullReady && shouldAttachFullImage ? source : undefined}
         alt={slide.alt ?? ""}
         loading="eager"
         decoding="async"
         onLoad={() => {
           revealFinalImage();
+          debugPhoto("full-image-shown", { source: shortSrc(source) });
         }}
         sx={{
           position: "absolute",
