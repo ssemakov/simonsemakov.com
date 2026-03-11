@@ -2,9 +2,8 @@ import { Box, Container, Typography } from "@mui/material";
 import {
   useCallback,
   CSSProperties,
-  ImgHTMLAttributes,
+  MouseEventHandler,
   useRef,
-  SyntheticEvent,
   useEffect,
   useMemo,
   useState,
@@ -498,23 +497,24 @@ function ProgressiveLightboxSlide({ slide, rect, offset }: ProgressiveLightboxSl
 
 interface ProgressivePhotoProps {
   src: string;
-  layoutWidth: number;
-  imageProps: ImgHTMLAttributes<HTMLImageElement> & {
-    src: string;
-    alt: string;
-    style: CSSProperties;
-  };
-  wrapperStyle: CSSProperties;
+  alt: string;
+  title?: string;
+  width: number;
+  height: number;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
 function ProgressivePhoto({
   src,
-  layoutWidth,
-  imageProps,
-  wrapperStyle,
+  alt,
+  title,
+  width,
+  height,
+  onClick,
 }: ProgressivePhotoProps) {
+  const layoutWidth = width;
   const [shouldLoad, setShouldLoad] = useState(() => previewRequestedSources.has(src));
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLElement | null>(null);
 
   const previewSrc = useMemo(
     () => getPreviewImageSrc(src, layoutWidth),
@@ -628,7 +628,29 @@ function ProgressivePhoto({
   }, [effectivePreviewSrc, previewSrc, shouldLoad, src]);
 
   return (
-    <Box ref={wrapperRef} position="relative" overflow="hidden" style={wrapperStyle}>
+    <Box
+      component={onClick ? "button" : "div"}
+      ref={wrapperRef}
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
+      className={
+        onClick
+          ? "react-photo-album--photo react-photo-album--button"
+          : "react-photo-album--photo"
+      }
+      style={
+        {
+          "--react-photo-album--photo-width": width,
+          "--react-photo-album--photo-height": height,
+        } as CSSProperties
+      }
+      sx={{
+        position: "relative",
+        overflow: "hidden",
+        width: "100%",
+        padding: "calc(var(--react-photo-album--padding) * 1px)",
+      }}
+    >
       <Box
         component="img"
         src={blurredSrc}
@@ -638,7 +660,7 @@ function ProgressivePhoto({
         decoding="async"
         sx={{
           position: "absolute",
-          inset: 0,
+          inset: "calc(var(--react-photo-album--padding) * 1px)",
           width: "100%",
           height: "100%",
           objectFit: "cover",
@@ -650,20 +672,21 @@ function ProgressivePhoto({
       />
       <Box
         component="img"
-        {...imageProps}
         src={shouldLoad ? effectivePreviewSrc : undefined}
+        alt={alt}
+        title={title}
         loading="lazy"
         decoding="async"
-        onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
+        className="react-photo-album--image"
+        onLoad={() => {
           if (effectivePreviewSrc) {
             previewImageReady.add(effectivePreviewSrc);
           }
           previewDisplayedSources.add(src);
           setIsLoaded(true);
-          imageProps.onLoad?.(event);
         }}
         sx={{
-          ...imageProps.style,
+          aspectRatio: `${width} / ${height}`,
           position: "relative",
           width: "100%",
           height: "100%",
@@ -722,15 +745,20 @@ export default function PhotoAlbumGallery({ album }: PhotoAlbumGalleryProps) {
           padding={0}
           photos={album.photos}
           columns={getColumnCount}
-          onClick={(_, __, index) => setLightboxIndex(index)}
-          renderPhoto={({ photo, layout, imageProps, wrapperStyle }) => (
-            <ProgressivePhoto
-              src={photo.src}
-              layoutWidth={layout.width}
-              imageProps={imageProps}
-              wrapperStyle={wrapperStyle}
-            />
-          )}
+          onClick={({ index }) => setLightboxIndex(index)}
+          render={{
+            photo: ({ onClick }, { photo, width, height, index }) => (
+              <ProgressivePhoto
+                key={photo.src || index}
+                src={photo.src}
+                alt={photo.alt ?? ""}
+                title={photo.title}
+                width={width}
+                height={height}
+                onClick={onClick}
+              />
+            ),
+          }}
         />
       </Box>
       <Lightbox

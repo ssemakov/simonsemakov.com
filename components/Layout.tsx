@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 interface LayoutProps {
   leftPaine: React.FC;
