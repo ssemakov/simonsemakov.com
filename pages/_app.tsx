@@ -1,6 +1,6 @@
 import Head from "next/head";
 import React from "react";
-import { AppProps } from 'next/app';
+import { AppProps } from "next/app";
 
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { config } from "@fortawesome/fontawesome-svg-core";
@@ -11,9 +11,10 @@ import createEmotionCache from "../lib/emotionCache";
 import theme from "../lib/theme";
 
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import "react-photo-album/masonry.css";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
-require("../styles/globals.css");
+import "../styles/globals.css";
 
 config.autoAddCss = false;
 
