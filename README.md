@@ -9,6 +9,9 @@ Photo galleries use Gumlet for media delivery and a local static manifest for al
 Create a `.env.local` file and configure:
 
 ```
+B2_KEY_ID=
+B2_APPLICATION_KEY=
+B2_BUCKET_ID=
 NEXT_PUBLIC_GUMLET_DELIVERY_URL=https://<your-gumlet-source>.gumlet.io
 ```
 
@@ -28,12 +31,23 @@ yarn sync:photos --albums=istanbul,kyoto --root=albums
 ```
 
 The script automatically reads `B2_KEY_ID`, `B2_APPLICATION_KEY`, and `B2_BUCKET_ID`
-from `.env.local` and `.env` (or from already-exported shell variables).
+from `.env.local` (or from already-exported shell variables).
 
 Notes:
 - `--albums` is required (comma-separated folder names under `--root`).
 - Each album entry can be either folder name (`istanbul`) or full path (`albums/istanbul`).
 - The script reuses existing photo dimensions when possible and probes image dimensions for new files.
 - Add `--dry-run` to print generated manifest without writing.
+
+### Upload photos to Backblaze B2
+
+You can upload local images with the same `.env.local` credentials:
+
+```
+yarn upload:photos --source ./photos --bucket my-bucket --prefix albums/istanbul
+```
+
+The upload script reads `B2_KEY_ID` and `B2_APPLICATION_KEY` from `.env.local`
+before parsing CLI arguments, so the flags are only needed if you want to override them.
 
 The provided `.env.local.example` file can be copied and updated.

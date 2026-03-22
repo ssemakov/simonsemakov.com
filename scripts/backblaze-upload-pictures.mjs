@@ -5,6 +5,8 @@ import { createReadStream } from "node:fs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
+import { loadLocalEnvFiles } from "./load-env.mjs";
+
 const IMAGE_EXTENSIONS = new Set([
   ".jpg",
   ".jpeg",
@@ -37,8 +39,8 @@ Usage:
 Required:
   -s, --source <folder>             Local folder that contains pictures
   -b, --bucket <bucket-name>        Target B2 bucket name
-      --key-id <id>                 Backblaze key ID (or B2_KEY_ID env var)
-      --application-key <key>       Backblaze application key (or B2_APPLICATION_KEY env var)
+      --key-id <id>                 Backblaze key ID (or B2_KEY_ID from .env.local)
+      --application-key <key>       Backblaze application key (or B2_APPLICATION_KEY from .env.local)
 
 Options:
   -p, --prefix <path>               Optional key prefix inside bucket (example: photos/2026)
@@ -247,6 +249,8 @@ async function uploadSingleFile(filePath, key, uploadUrl, uploadAuthToken) {
 }
 
 async function main() {
+  await loadLocalEnvFiles();
+
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     printHelp();
