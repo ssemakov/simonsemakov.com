@@ -41,8 +41,8 @@
     "build": "next build --webpack",
     "dev": "next dev --webpack",
     "export": "next export",
-    "upload:photos": "node scripts/backblaze-upload-pictures.mjs",
-    "sync:photos": "node scripts/sync-photo-manifest-from-b2.mjs",
+    "photos:upload": "node scripts/backblaze-upload-pictures.mjs",
+    "photos:manifest": "node scripts/sync-photo-manifest-from-b2.mjs",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --ignore-pattern 'build/**'"
   },
