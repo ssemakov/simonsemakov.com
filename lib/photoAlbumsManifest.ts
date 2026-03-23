@@ -27,8 +27,8 @@ export const photoAlbumsManifest: PhotoAlbumManifestEntry[] = [
     photos: [
       {
         path: "istanbul/IMG_8263-HDR.jpg",
-        width: 2048,
-        height: 1365,
+        width: 5686,
+        height: 3791,
       },
       {
         path: "istanbul/IMG_8276.jpg",
@@ -434,6 +434,169 @@ export const photoAlbumsManifest: PhotoAlbumManifestEntry[] = [
         path: "istanbul/IMG_8726-Enhanced-NR.jpg",
         width: 5506,
         height: 3671,
+      },
+    ],
+  },
+  {
+    slug: "dolomites",
+    title: "Dolomites",
+    description: "",
+    coverPhotoIndex: 0,
+    photos: [
+      {
+        path: "dolomites/DJI_0009.jpg",
+        width: 5207,
+        height: 1949,
+      },
+      {
+        path: "dolomites/DJI_0012-HDR.jpg",
+        width: 4449,
+        height: 2964,
+      },
+      {
+        path: "dolomites/DJI_0060-HDR.jpg",
+        width: 5373,
+        height: 3579,
+      },
+      {
+        path: "dolomites/DJI_0128-HDR-2.jpg",
+        width: 4885,
+        height: 3254,
+      },
+      {
+        path: "dolomites/DJI_0147-HDR.jpg",
+        width: 4851,
+        height: 3232,
+      },
+      {
+        path: "dolomites/DJI_0173-HDR.jpg",
+        width: 4452,
+        height: 2966,
+      },
+      {
+        path: "dolomites/IMG_4403.jpg",
+        width: 2757,
+        height: 2068,
+      },
+      {
+        path: "dolomites/IMG_4458.jpg",
+        width: 3011,
+        height: 2258,
+      },
+      {
+        path: "dolomites/IMG_4564.jpg",
+        width: 3414,
+        height: 2560,
+      },
+      {
+        path: "dolomites/IMG_4688.jpg",
+        width: 4032,
+        height: 3024,
+      },
+      {
+        path: "dolomites/IMG_4704.jpg",
+        width: 2754,
+        height: 3672,
+      },
+      {
+        path: "dolomites/IMG_4718.jpg",
+        width: 3586,
+        height: 2690,
+      },
+      {
+        path: "dolomites/IMG_4725.jpg",
+        width: 3634,
+        height: 2726,
+      },
+      {
+        path: "dolomites/IMG_4780.jpg",
+        width: 3572,
+        height: 2679,
+      },
+      {
+        path: "dolomites/IMG_4796.jpg",
+        width: 3765,
+        height: 2824,
+      },
+      {
+        path: "dolomites/IMG_4971.jpg",
+        width: 3189,
+        height: 2392,
+      },
+      {
+        path: "dolomites/IMG_4990.jpg",
+        width: 3262,
+        height: 2447,
+      },
+      {
+        path: "dolomites/IMG_5001.jpg",
+        width: 3105,
+        height: 2329,
+      },
+      {
+        path: "dolomites/IMG_5019.jpg",
+        width: 3090,
+        height: 2318,
+      },
+      {
+        path: "dolomites/IMG_5051.jpg",
+        width: 3807,
+        height: 2855,
+      },
+      {
+        path: "dolomites/IMG_5066.jpg",
+        width: 3435,
+        height: 2576,
+      },
+      {
+        path: "dolomites/IMG_5106.jpg",
+        width: 3468,
+        height: 2601,
+      },
+      {
+        path: "dolomites/IMG_5389.jpg",
+        width: 4061,
+        height: 2707,
+      },
+      {
+        path: "dolomites/IMG_5463.jpg",
+        width: 5874,
+        height: 3916,
+      },
+      {
+        path: "dolomites/IMG_5512.jpg",
+        width: 3559,
+        height: 5339,
+      },
+      {
+        path: "dolomites/IMG_5569.jpg",
+        width: 4000,
+        height: 6000,
+      },
+      {
+        path: "dolomites/IMG_5600.jpg",
+        width: 5808,
+        height: 3872,
+      },
+      {
+        path: "dolomites/IMG_5643.jpg",
+        width: 4999,
+        height: 3333,
+      },
+      {
+        path: "dolomites/IMG_5714.jpg",
+        width: 4670,
+        height: 3113,
+      },
+      {
+        path: "dolomites/IMG_5720.jpg",
+        width: 5595,
+        height: 3730,
+      },
+      {
+        path: "dolomites/IMG_5741.jpg",
+        width: 5251,
+        height: 3501,
       },
     ],
   },
