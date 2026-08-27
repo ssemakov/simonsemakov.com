@@ -13,6 +13,14 @@ const SideMenu = () => (
           <Link href="/photos" aria-label="Navigation to photography page.">
             <GradientTypography variant="h4">photography</GradientTypography>
           </Link>
+          <Link
+            href="https://digital-media-study.vercel.app/"
+            aria-label="Navigation to Digital Media Study."
+          >
+            <GradientTypography variant="h4">
+              digital media study
+            </GradientTypography>
+          </Link>
         </Stack>
       </Container>
     </Box>
